@@ -1,0 +1,22 @@
+services:
+  gin:
+    image: golang:1.26.1
+    working_dir: /app
+    volumes:
+      - .:/app
+    command: sed -i 's/\r$//' run.sh
+    ports:
+      - "8888:8888"
+    depends_on:
+      - postgres
+
+  postgres:
+    image: postgres:16
+    environment:
+      POSTGRES_USER: app
+      POSTGRES_PASSWORD: app
+      POSTGRES_DB: calendar
+    ports:
+      - "5432:5432" #デバッグ用
+    volumes:
+      - ./db:/var/lib/postgresql/data
