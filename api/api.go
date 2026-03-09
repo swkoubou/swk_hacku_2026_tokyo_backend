@@ -7,10 +7,10 @@ import (
 	"os"
 
 	"github.com/gin-gonic/gin"
+	"github.com/joho/godotenv"
 	openai "github.com/openai/openai-go/v3"
 	"github.com/openai/openai-go/v3/option"
 	"github.com/openai/openai-go/v3/responses"
-	"github.com/joho/godotenv"
 )
 
 func main() {
@@ -42,7 +42,7 @@ func main() {
 		resp, err := client.Responses.New(
 			context.Background(),
 			responses.ResponseNewParams{
-				Model: openai.ChatModelGPT5Mini, // 高速モデル
+				Model: openai.ChatModelGPT4_1Nano, // 高速モデル 4.1nanoが最速！
 				Input: responses.ResponseNewParamsInputUnion{
 					OfString: openai.String(`
 					レスポンスは必ずJSONで返してください。
@@ -56,7 +56,7 @@ func main() {
 					}
 					"start_time"は必ずHH:MM:00の形式で返してください。
 					秒数の情報はひつようありませんので
-					また、時間の指定がされてない場合はNULLを返してください。
+					また、n時などの明確な時間の指定がされてない場合はNULLを返してください。
 					以下がNULLを返すサンプルです
 					{
 						"start_date": "2026-03-09",
@@ -66,7 +66,7 @@ func main() {
 					}
 					開始日と終了日が不明な場合は本日の日付を使用してください。
 					それでは入力をはじめます。
-					`+message),
+					` + message),
 				},
 			},
 		)
@@ -77,7 +77,8 @@ func main() {
 		}
 
 		c.JSON(http.StatusOK, gin.H{
-			"response": resp.OutputText(),
+			"process_lv": 2,
+			"response":   resp.OutputText(),
 		})
 	})
 
