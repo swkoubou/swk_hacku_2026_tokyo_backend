@@ -42,9 +42,31 @@ func main() {
 		resp, err := client.Responses.New(
 			context.Background(),
 			responses.ResponseNewParams{
-				Model: "gpt-5-mini", // 高速モデル
+				Model: openai.ChatModelGPT5Mini, // 高速モデル
 				Input: responses.ResponseNewParamsInputUnion{
-					OfString: openai.String(message),
+					OfString: openai.String(`
+					レスポンスは必ずJSONで返してください。
+					あなたは会話から得られた情報を元に、適切な返答を生成してください。
+					以下がサンプルです
+					{
+						"start_date": "2026-03-09",
+						"start_time": "10:40:00",
+						"end_date": "2026-03-10",
+						"event_name": "旅行"
+					}
+					"start_time"は必ずHH:MM:00の形式で返してください。
+					秒数の情報はひつようありませんので
+					また、時間の指定がされてない場合はNULLを返してください。
+					以下がNULLを返すサンプルです
+					{
+						"start_date": "2026-03-09",
+						"start_time": null,
+						"end_date": "2026-03-10",
+						"event_name": "旅行"
+					}
+					開始日と終了日が不明な場合は本日の日付を使用してください。
+					それでは入力をはじめます。
+					`+message),
 				},
 			},
 		)
