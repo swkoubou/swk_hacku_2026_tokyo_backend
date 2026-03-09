@@ -2,6 +2,7 @@ package main
 
 import (
 	"context"
+	"encoding/json"
 	"log"
 	"net/http"
 	"os"
@@ -76,9 +77,21 @@ func main() {
 			return
 		}
 
+		// OpenAIからのテキストをJSONとしてパースして検証
+		var parsed interface{}
+		if err := json.Unmarshal([]byte(resp.OutputText()), &parsed); err != nil {
+			// JSONとしてパースできなかった場合はエラーにする
+			c.JSON(http.StatusInternalServerError, gin.H{
+				"error": "model did not return valid JSON",
+				"raw":   resp.OutputText(),
+			})
+			return
+		}
+
+		// パース済みのJSONをそのままJSONとして返却
 		c.JSON(http.StatusOK, gin.H{
 			"process_lv": 2,
-			"response":   resp.OutputText(),
+			"response":   parsed,
 		})
 	})
 
