@@ -11,6 +11,20 @@ services:
     depends_on:
       - postgres
 
+  fastapi:
+    image: python:3.11-slim
+    working_dir: /app
+    volumes:
+      - ./lv1:/app
+    ports:
+      - "8000:8000"
+    command: >
+      sh -c "
+        pip install -r requirements.txt &&
+        #uvicorn main:app --host 0.0.0.0 --port 8000 --workers 16 --proxy-headers #実行
+        tail -f /dev/null #デバッグ
+      "
+
   postgres:
     image: postgres:16
     environment:
