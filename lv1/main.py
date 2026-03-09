@@ -53,6 +53,9 @@ def sentence_to_json(sentence: str):
             if word["type"][0]=="助詞" and word["type"][1]=="格助詞": #から と といった日付間の条件等
                 #print(word["word"])
                 noun_list.append(word["word"])
+    if len(date_list)==0:
+        print("日付")
+        return
     start_date=date_list[0]
     if len(date_list)==1:
         end_date=start_date
