@@ -19,7 +19,7 @@ docker compose up -d
 ```
 または
 ```
-sudo ocker compose up -d
+sudo docker compose up -d
 ```
 
 ## 停止
@@ -28,7 +28,7 @@ docker compose down
 ```
 または
 ```
-sudo ocker compose down
+sudo docker compose down
 ```
 
 ## 仕様
