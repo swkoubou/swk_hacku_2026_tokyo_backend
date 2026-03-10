@@ -1,16 +1,4 @@
 services:
-  gin:
-    image: golang:1.26.1
-    working_dir: /app
-    volumes:
-      - .:/app
-      - ./go:/go
-    command: sh run.sh
-    ports:
-      - "8888:8888"
-    depends_on:
-      - postgres
-
   fastapi:
     image: python:3.11-slim
     working_dir: /app

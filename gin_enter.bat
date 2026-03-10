@@ -1,1 +1,0 @@
-docker compose exec gin /bin/sh
