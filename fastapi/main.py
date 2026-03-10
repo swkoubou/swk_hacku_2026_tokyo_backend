@@ -12,7 +12,7 @@ import json
 import psycopg2
 import redis
 
-
+from psycopg2.extras import RealDictCursor
 #run uvicorn demo:app --host 0.0.0.0 --port 8888 --reload
 #sample user_uuid 3c7a9a24-9e34-4f65-bc1e-9a6e6c7d7f12
 
@@ -21,7 +21,7 @@ t = Tokenizer()
 app = FastAPI()
 openai.api_key = os.getenv("OPENAI_API_KEY")
 connection = psycopg2.connect("host=postgres dbname=calendar user=app password=app")
-cursor = connection.cursor()
+cursor = connection.cursor(cursor_factory=RealDictCursor)
 
 
 @app.middleware("http")
@@ -66,7 +66,6 @@ async def require_user_uuid(request: Request, call_next):
             content={"detail": "unauthorized user_uuid"},
         )
 
-
 # ===== リクエストボディ定義 =====
 
 class MessageBody(BaseModel):
@@ -78,9 +77,8 @@ class DefEventBody(BaseModel):
     end_date: str
     event_name: str
 
-class GetMonthEventsBody(BaseModel):
+class GetYearEventsBody(BaseModel):
     year: str
-    month: str
 
 class UpdateEventBody(BaseModel):
     task_uuid: str
@@ -270,45 +268,47 @@ def def_event(request: Request, body: DefEventBody):
                 "success": True
             }
 
-@app.post("/get_month_events") #リクエストC
-def get_month_events(request: Request, body: GetMonthEventsBody):
-    return [
-            {
-                "user_uuid": "3c7a9a24-9e34-4f65-bc1e-9a6e6c7d7f12",
-                "task_uuid": "fbcf83d0-13e6-419f-83eb-661ea656d7b1",
-                "start_date": "2026-03-09",
-                "start_time": "10:40:00",
-                "end_date": "2026-03-15",
-                "event_name": "旅行1"
-            },
-            {
-                "user_uuid": "3c7a9a24-9e34-4f65-bc1e-9a6e6c7d7f12",
-                "task_uuid": "c8681580-e36d-448d-9752-b9fc49c2e393",
-                "start_date": "2026-03-19",
-                "start_time": "8:40:00",
-                "end_date": "2026-03-22",
-                "event_name": "旅行2"
-            },
-            {
-                "user_uuid": "3c7a9a24-9e34-4f65-bc1e-9a6e6c7d7f12",
-                "task_uuid": "60193e10-35c3-497c-a4d5-08a1267b9f73",
-                "start_date": "2026-04-09",
-                "start_time": "10:40:00",
-                "end_date": "2026-04-10",
-                "event_name": "旅行3"
-            },
-            {
-                "user_uuid": "3c7a9a24-9e34-4f65-bc1e-9a6e6c7d7f12",
-                "task_uuid": "9c41ce15-89f7-4ffd-a632-721e0186c611",
-                "start_date": "2026-04-19",
-                "start_time": None,
-                "end_date": "2026-05-10",
-                "event_name": "旅行4"
-            },
-        ]
+@app.post("/get_year_events") #リクエストC
+def get_year_events(request: Request, body: GetYearEventsBody):
+    try: 
+        cursor.execute(
+            """
+        SELECT
+            task_id,
+            user_uuid,
+            TO_CHAR(start_date, 'YYYY-MM-DD') as start_date,
+            TO_CHAR(start_time, 'HH24:MI:SS') as start_time,
+            TO_CHAR(end_date, 'YYYY-MM-DD') as end_date,
+            event_name
+        FROM events
+        WHERE user_uuid = %s
+        AND EXTRACT(YEAR FROM start_date) = %s
+    """,
+    (request.headers.get("user_uuid"), int(body.year))
+        )
+        query_result = cursor.fetchall()
+    except Exception as e:
+        print(e)
+        return JSONResponse( #
+            status_code=500,
+            content={"detail": "database error"},
+        )
+    result=[]
+    for event in query_result:
+        result.append({
+            "user_uuid": event["user_uuid"],
+            "task_uuid": event["task_id"],
+            "start_date": event["start_date"],
+            "start_time": event["start_time"],
+            "end_date": event["end_date"],
+            "event_name": event["event_name"]
+        })
+    #print(event)
+    return result
 
 @app.post("/update_event") #リクエストD
 def update_event(request: Request, body: UpdateEventBody):
+    
     return {
                 "success": True
             }
