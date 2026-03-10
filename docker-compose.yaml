@@ -17,12 +17,12 @@ services:
     volumes:
       - ./lv1:/app
     ports:
-      - "8000:8000"
+      - "8000:8000" #デバッグ用
     command: >
       sh -c "
         pip install -r requirements.txt &&
-        #uvicorn main:app --host 0.0.0.0 --port 8000 --workers 16 --proxy-headers #実行
-        tail -f /dev/null #デバッグ
+        uvicorn main:app --host 0.0.0.0 --port 8000 --workers 16 --proxy-headers #自動起動
+        #tail -f /dev/null #デバッグ
       "
 
   postgres:

@@ -1,6 +1,6 @@
 # API仕様書
 
-**ベースURL:** `https://hackutokyo2026.yoimiya.net`  
+**ベースURL:** `http://localhost:8888`  
 **認証方式:** リクエストヘッダーに `user_uuid` を付与  
 **サンプル user_uuid:** `3c7a9a24-9e34-4f65-bc1e-9a6e6c7d7f12`
 
@@ -47,7 +47,7 @@ UUIDを新規発行します。デバッグ・初期登録用途。
 
 **curlサンプル:**
 ```bash
-curl -s -X POST https://hackutokyo2026.yoimiya.net/gen_uuid
+curl -s -X POST http://localhost:8888/gen_uuid
 ```
 
 ---
@@ -77,7 +77,7 @@ curl -s -X POST https://hackutokyo2026.yoimiya.net/gen_uuid
 
 **curlサンプル:**
 ```bash
-curl -s -X POST https://hackutokyo2026.yoimiya.net/lv1 -H "user_uuid: 3c7a9a24-9e34-4f65-bc1e-9a6e6c7d7f12" -H "message: 明日の10時40分から旅行"
+curl -s -X POST http://localhost:8888/lv1 -H "user_uuid: 3c7a9a24-9e34-4f65-bc1e-9a6e6c7d7f12" -H "message: 明日の10時40分から旅行"
 ```
 
 ---
@@ -107,7 +107,7 @@ lv1と同様ですが、`start_time` が `null` になるケース（時刻不�
 
 **curlサンプル:**
 ```bash
-curl -s -X POST https://hackutokyo2026.yoimiya.net/lv2 -H "user_uuid: 3c7a9a24-9e34-4f65-bc1e-9a6e6c7d7f12" -H "message: 明日から旅行"
+curl -s -X POST http://localhost:8888/lv2 -H "user_uuid: 3c7a9a24-9e34-4f65-bc1e-9a6e6c7d7f12" -H "message: 明日から旅行"
 ```
 
 ---
@@ -137,7 +137,7 @@ curl -s -X POST https://hackutokyo2026.yoimiya.net/lv2 -H "user_uuid: 3c7a9a24-9
 
 **curlサンプル:**
 ```bash
-curl -s -X POST https://hackutokyo2026.yoimiya.net/lv3 -H "user_uuid: 3c7a9a24-9e34-4f65-bc1e-9a6e6c7d7f12" -H "message: マイケルと明日10時45分から旅行"
+curl -s -X POST http://localhost:8888/lv3 -H "user_uuid: 3c7a9a24-9e34-4f65-bc1e-9a6e6c7d7f12" -H "message: マイケルと明日10時45分から旅行"
 ```
 
 ---
@@ -165,7 +165,7 @@ curl -s -X POST https://hackutokyo2026.yoimiya.net/lv3 -H "user_uuid: 3c7a9a24-9
 
 **curlサンプル:**
 ```bash
-curl -s -X POST https://hackutokyo2026.yoimiya.net/def_event -H "user_uuid: 3c7a9a24-9e34-4f65-bc1e-9a6e6c7d7f12" -H "start_date: 2026-03-09" -H "start_time: 10:40:00" -H "end_date: 2026-03-10" -H "event_name: 旅行"
+curl -s -X POST http://localhost:8888/def_event -H "user_uuid: 3c7a9a24-9e34-4f65-bc1e-9a6e6c7d7f12" -H "start_date: 2026-03-09" -H "start_time: 10:40:00" -H "end_date: 2026-03-10" -H "event_name: 旅行"
 ```
 
 ---
@@ -206,7 +206,7 @@ curl -s -X POST https://hackutokyo2026.yoimiya.net/def_event -H "user_uuid: 3c7a
 
 **curlサンプル:**
 ```bash
-curl -s -X POST https://hackutokyo2026.yoimiya.net/get_month_events -H "user_uuid: 3c7a9a24-9e34-4f65-bc1e-9a6e6c7d7f12" -H "year: 2026" -H "month: 3"
+curl -s -X POST http://localhost:8888/get_month_events -H "user_uuid: 3c7a9a24-9e34-4f65-bc1e-9a6e6c7d7f12" -H "year: 2026" -H "month: 3"
 ```
 
 ---
@@ -235,7 +235,7 @@ curl -s -X POST https://hackutokyo2026.yoimiya.net/get_month_events -H "user_uui
 
 **curlサンプル:**
 ```bash
-curl -s -X POST https://hackutokyo2026.yoimiya.net/update_event -H "user_uuid: 3c7a9a24-9e34-4f65-bc1e-9a6e6c7d7f12" -H "task_uuid: fbcf83d0-13e6-419f-83eb-661ea656d7b1" -H "new_start_date: 2026-03-10" -H "new_start_time: 09:00:00" -H "new_end_date: 2026-03-16" -H "new_event_name: 旅行（更新）"
+curl -s -X POST http://localhost:8888/update_event -H "user_uuid: 3c7a9a24-9e34-4f65-bc1e-9a6e6c7d7f12" -H "task_uuid: fbcf83d0-13e6-419f-83eb-661ea656d7b1" -H "new_start_date: 2026-03-10" -H "new_start_time: 09:00:00" -H "new_end_date: 2026-03-16" -H "new_event_name: 旅行（更新）"
 ```
 
 ---
@@ -260,7 +260,7 @@ curl -s -X POST https://hackutokyo2026.yoimiya.net/update_event -H "user_uuid: 3
 
 **curlサンプル:**
 ```bash
-curl -s -X POST https://hackutokyo2026.yoimiya.net/delete_event -H "user_uuid: 3c7a9a24-9e34-4f65-bc1e-9a6e6c7d7f12" -H "task_uuid: fbcf83d0-13e6-419f-83eb-661ea656d7b1"
+curl -s -X POST http://localhost:8888/delete_event -H "user_uuid: 3c7a9a24-9e34-4f65-bc1e-9a6e6c7d7f12" -H "task_uuid: fbcf83d0-13e6-419f-83eb-661ea656d7b1"
 ```
 
 ---
@@ -292,7 +292,7 @@ curl -s -X POST https://hackutokyo2026.yoimiya.net/delete_event -H "user_uuid: 3
 
 **curlサンプル:**
 ```bash
-curl -s -X POST https://hackutokyo2026.yoimiya.net/get_today_events -H "user_uuid: 3c7a9a24-9e34-4f65-bc1e-9a6e6c7d7f12"
+curl -s -X POST http://localhost:8888/get_today_events -H "user_uuid: 3c7a9a24-9e34-4f65-bc1e-9a6e6c7d7f12"
 ```
 
 ---
@@ -317,7 +317,7 @@ curl -s -X POST https://hackutokyo2026.yoimiya.net/get_today_events -H "user_uui
 
 **curlサンプル:**
 ```bash
-curl -s -X POST https://hackutokyo2026.yoimiya.net/do_today_event -H "user_uuid: 3c7a9a24-9e34-4f65-bc1e-9a6e6c7d7f12" -H "task_uuid: fbcf83d0-13e6-419f-83eb-661ea656d7b1"
+curl -s -X POST http://localhost:8888/do_today_event -H "user_uuid: 3c7a9a24-9e34-4f65-bc1e-9a6e6c7d7f12" -H "task_uuid: fbcf83d0-13e6-419f-83eb-661ea656d7b1"
 ```
 
 ---
@@ -342,7 +342,7 @@ curl -s -X POST https://hackutokyo2026.yoimiya.net/do_today_event -H "user_uuid:
 
 **curlサンプル:**
 ```bash
-curl -s -X POST https://hackutokyo2026.yoimiya.net/rollback_today_event -H "user_uuid: 3c7a9a24-9e34-4f65-bc1e-9a6e6c7d7f12" -H "task_uuid: fbcf83d0-13e6-419f-83eb-661ea656d7b1"
+curl -s -X POST http://localhost:8888/rollback_today_event -H "user_uuid: 3c7a9a24-9e34-4f65-bc1e-9a6e6c7d7f12" -H "task_uuid: fbcf83d0-13e6-419f-83eb-661ea656d7b1"
 ```
 
 ---
