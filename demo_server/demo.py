@@ -38,7 +38,7 @@ class DefEventBody(BaseModel):
     end_date: str
     event_name: str
 
-class GetMonthEventsBody(BaseModel):
+class GetYearEventsBody(BaseModel):
     year: str
 
 class UpdateEventBody(BaseModel):
@@ -93,8 +93,8 @@ def def_event(request: Request, body: DefEventBody):
                 "success": True
             }
 
-@app.post("/get_month_events") #リクエストC
-def get_month_events(request: Request, body: GetMonthEventsBody):
+@app.post("/get_year_events") #リクエストC
+def get_year_events(request: Request, body: GetYearEventsBody):
     return [
             {
                 "user_uuid": "3c7a9a24-9e34-4f65-bc1e-9a6e6c7d7f12",
