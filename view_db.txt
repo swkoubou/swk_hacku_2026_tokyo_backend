@@ -1,0 +1,4 @@
+psql -U app -d calendar
+\l
+SELECT * FROM users;
+SELECT * FROM events;

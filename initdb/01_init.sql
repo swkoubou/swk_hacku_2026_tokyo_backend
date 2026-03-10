@@ -5,9 +5,9 @@ CREATE TABLE IF NOT EXISTS users (
     created_at TIMESTAMP DEFAULT NOW()
 );
 
-INSERT INTO users (user_uuid, name) VALUES
+INSERT INTO users (user_uuid, name) VALUES --for dev
 ('0bc63500-b97a-45cd-9b93-ee7ca7ce50f2', 'user1'),
-('29f8bbb3-433b-4fc7-8074-d0bfbadec8a4', 'user2');
+('3c7a9a24-9e34-4f65-bc1e-9a6e6c7d7f12', 'readme_user');
 
 CREATE TABLE IF NOT EXISTS events (
     task_id UUID NOT NULL PRIMARY KEY,

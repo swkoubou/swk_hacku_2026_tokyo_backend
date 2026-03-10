@@ -9,11 +9,15 @@ import re
 import os
 import openai
 import json
+import psycopg2
 #run uvicorn demo:app --host 0.0.0.0 --port 8888 --reload
 #sample user_uuid 3c7a9a24-9e34-4f65-bc1e-9a6e6c7d7f12
 t = Tokenizer()
 app = FastAPI()
 openai.api_key = os.getenv("OPENAI_API_KEY")
+connection = psycopg2.connect("host=postgres dbname=calendar user=app password=app")
+cursor = connection.cursor()
+
 
 @app.middleware("http")
 async def require_user_uuid(request: Request, call_next):
@@ -215,6 +219,23 @@ def lv3(request: Request, body: MessageBody):
 
 @app.post("/def_event") #リクエストB
 def def_event(request: Request, body: DefEventBody):
+    sql = "INSERT INTO events (task_id, user_uuid, start_date, start_time, end_date, event_name) VALUES (%s, %s, %s, %s, %s, %s)"
+    try:
+        cursor.execute(sql, (
+            str(uuid.uuid4()),
+            request.headers.get("user_uuid"),
+            body.start_date,
+            body.start_time,
+            body.end_date,
+            body.event_name
+            ))
+        connection.commit()
+    except psycopg2.Error as e:
+        connection.rollback()
+        return JSONResponse(
+                            status_code=500,
+                            content={"detail": f"Database error: {e.pgerror}"}
+                            )
     return {
                 "success": True
             }
@@ -323,4 +344,15 @@ def rollback_today_event(request: Request, body: TaskBody):
 
 @app.post("/gen_uuid") #リクエスト FOR DEBUG
 def gen_uuid():
-    return {"user_uuid": str(uuid.uuid4())}
+    new_uuid=str(uuid.uuid4())
+    sql = "INSERT INTO users (user_uuid) VALUES (%s)"
+    try:
+        cursor.execute(sql, (new_uuid,))
+        connection.commit()
+    except psycopg2.Error as e:
+        connection.rollback()
+        return JSONResponse(
+                            status_code=500,
+                            content={"detail": f"Database error: {e.pgerror}"}
+                            )
+    return {"user_uuid": new_uuid}
