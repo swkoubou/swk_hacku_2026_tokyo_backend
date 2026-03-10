@@ -16,6 +16,20 @@ services:
       - OPENAI_API_KEY=${OPENAI_API_KEY}
       - TZ=Asia/Tokyo
 
+  scheduler:
+    image: python:3.11-slim
+    working_dir: /app
+    volumes:
+      - ./scheduler:/app
+    command: >
+      sh -c "
+        pip install -r requirements.txt &&
+        #python3 scheduler.py #自動起動
+        tail -f /dev/null #デバッグ
+      "
+    environment:
+      - TZ=Asia/Tokyo
+
   postgres:
     image: postgres:16
     environment:
