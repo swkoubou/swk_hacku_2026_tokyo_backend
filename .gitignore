@@ -1,6 +1,4 @@
 .env
 db
-server
-go
 __pycache__
 venv
