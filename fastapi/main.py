@@ -6,11 +6,14 @@ import uuid
 from janome.tokenizer import Tokenizer
 from datetime import datetime, timedelta
 import re
+import os
+import openai
+import json
 #run uvicorn demo:app --host 0.0.0.0 --port 8888 --reload
-#とりあえずフロントに渡すAPIモックデモサーバー
 #sample user_uuid 3c7a9a24-9e34-4f65-bc1e-9a6e6c7d7f12
 t = Tokenizer()
 app = FastAPI()
+openai.api_key = os.getenv("OPENAI_API_KEY")
 
 @app.middleware("http")
 async def require_user_uuid(request: Request, call_next):
@@ -134,14 +137,41 @@ def lv1(request: Request, body: MessageBody):
 
 @app.post("/lv2") #リクエストA lv2
 def lv2(request: Request, body: MessageBody):
+    response = openai.chat.completions.create(
+    model="gpt-4.1-nano",
+    messages=[
+        {"role": "system", "content": f"""
+        レスポンスは必ずJSONで返してください。
+        今日の日付は{datetime.now().strftime("%Y%m%d")}です
+        あなたは会話から得られた情報を元に、適切な返答を生成してください。
+        以下がサンプルです
+        {{
+            "start_date": "2026-03-09",
+            "start_time": "10:40:00",
+            "end_date": "2026-03-10",
+            "event_name": "旅行"
+        }}
+        "start_time"は必ずHH:MM:00の形式で返してください。
+        秒数の情報はひつようありませんので
+        また、n時などの明確な時間の指定がされてない場合はNULLを返してください。
+        以下がNULLを返すサンプルです
+        {{
+            "start_date": "2026-03-09",
+            "start_time": null,
+            "end_date": "2026-03-10",
+            "event_name": "旅行"
+        }}
+        開始日と終了日が不明な場合は本日の日付を使用してください。
+        """},
+        {"role": "user", "content": body.message}
+    ]
+    )
+    data = json.loads(response.choices[0].message.content)
+    print(data)
     return {
                 "lv": 2,
                 "message": body.message,
-                "start_date": "2026-03-09",
-                "start_time": None,
-                "end_date": "2026-03-10",
-                "event_name": "旅行"
-            }
+            }|data
 
 @app.post("/lv3") #リクエストA lv3
 def lv3(request: Request, body: MessageBody):
