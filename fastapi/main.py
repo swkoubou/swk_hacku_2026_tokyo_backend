@@ -28,7 +28,7 @@ async def require_user_uuid(request: Request, call_next):
         return JSONResponse(
             status_code=400,
             content={"detail": "missing required header: user_uuid"},
-        )
+        ) #あとでREDIS追加する
     if user_uuid != "3c7a9a24-9e34-4f65-bc1e-9a6e6c7d7f12":
         return JSONResponse(
             status_code=401,
