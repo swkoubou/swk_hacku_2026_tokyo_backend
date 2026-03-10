@@ -25,3 +25,4 @@ services:
       - "5432:5432" #デバッグ用
     volumes:
       - ./db:/var/lib/postgresql/data
+      - ./initdb:/docker-entrypoint-initdb.d
