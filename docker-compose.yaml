@@ -14,6 +14,7 @@ services:
       "
     environment:
       - OPENAI_API_KEY=${OPENAI_API_KEY}
+      - TZ=Asia/Tokyo
 
   postgres:
     image: postgres:16
