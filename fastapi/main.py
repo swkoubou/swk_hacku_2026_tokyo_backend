@@ -308,7 +308,39 @@ def get_year_events(request: Request, body: GetYearEventsBody):
 
 @app.post("/update_event") #リクエストD
 def update_event(request: Request, body: UpdateEventBody):
-    
+    sql = """
+    UPDATE events
+    SET
+        start_date = %s,
+        start_time = %s,
+        end_date = %s,
+        event_name = %s
+    WHERE
+        task_id = %s
+    AND
+        user_uuid = %s;
+    """
+    try:
+        cursor.execute(sql, (
+            body.new_start_date,
+            body.new_start_time,
+            body.new_end_date,
+            body.new_event_name,
+            body.task_uuid,
+            request.headers.get("user_uuid"),
+            ))
+        connection.commit()
+    except psycopg2.Error as e:
+        connection.rollback()
+        return JSONResponse(
+                            status_code=500,
+                            content={"detail": f"Database error: {e.pgerror}"}
+                            )
+    if cursor.rowcount == 0:
+        return JSONResponse(
+            status_code=404,
+            content={"detail": "task not found"}
+        )
     return {
                 "success": True
             }
