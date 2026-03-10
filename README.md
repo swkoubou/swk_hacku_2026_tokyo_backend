@@ -3,10 +3,32 @@ by team SWK
 
 ## 環境構築
 
+実行にはdocker composeと.envが必要です
+
 ## .env
 以下の書式に従ってdocker-compose.yamlと同じディレクトリに配置してください
+dbのファイルは ./dbに作成されます。リセットしたいときは消してください。
+ポートは8888です。
+
 ```
 OPENAI_API_KEY=sk-xxxxxxxxxxxxxxxxxxxxxxx
+```
+## 起動
+```
+docker compose up -d
+```
+または
+```
+sudo ocker compose up -d
+```
+
+## 停止
+```
+docker compose down
+```
+または
+```
+sudo ocker compose down
 ```
 
 ## 仕様
@@ -31,6 +53,7 @@ OPENAI_API_KEY=sk-xxxxxxxxxxxxxxxxxxxxxxx
 | OpenAI Python SDK (`openai`) | OpenAI API クライアント | Apache License 2.0 |
 | psycopg2-binary | PostgreSQL 用 Python ドライバ | GNU LGPL v3 以降（例外条項付き） |
 | redis (`redis`) | Redis 用 Python クライアント | MIT License |
+| APScheduler (`APScheduler`) | バックグラウンドジョブスケジューラ | MIT License |
 | Uvicorn (`uvicorn`) | ASGI サーバ | BSD 3-Clause License |
 
 ### コンテナイメージで利用している主なOSS
