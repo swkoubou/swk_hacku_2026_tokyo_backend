@@ -57,7 +57,8 @@ def sentence_to_json(sentence: str):
         start_date=datetime.now().strftime("%Y%m%d")
     else:
         start_date=date_list[0]
-    if len(date_list)==1:
+    #print(date_list)
+    if len(date_list)<2:
         end_date=start_date
     else:
         end_date=date_list[1]
