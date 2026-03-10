@@ -3,7 +3,7 @@ services:
     image: python:3.11-slim
     working_dir: /app
     volumes:
-      - ./lv1:/app
+      - ./fastapi:/app
     ports:
       - "8888:8888"
     command: >
