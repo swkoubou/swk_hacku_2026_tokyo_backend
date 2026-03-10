@@ -54,9 +54,9 @@ def sentence_to_json(sentence: str):
                 #print(word["word"])
                 noun_list.append(word["word"])
     if len(date_list)==0:
-        print("日付")
-        return
-    start_date=date_list[0]
+        start_date=datetime.now().strftime("%Y%m%d")
+    else:
+        start_date=date_list[0]
     if len(date_list)==1:
         end_date=start_date
     else:
