@@ -13,6 +13,3 @@ OPENAI_API_KEY=sk-xxxxxxxxxxxxxxxxxxxxxxx
 レベル2 gpt-4.1-nanoと簡易プロンプトを用いた処理
 レベル3 gpt-5-miniと通常プロンプトを用いた処理
 ```
-/api 中核となるginのフォルダです
-/lv1 レベル1のjanome + fastapiプログラムです
-/
