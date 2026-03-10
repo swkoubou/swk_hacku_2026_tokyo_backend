@@ -347,6 +347,28 @@ def update_event(request: Request, body: UpdateEventBody):
 
 @app.post("/delete_event") #リクエストE
 def delete_event(request: Request, body: TaskBody):
+    sql = """
+    DELETE FROM events
+    WHERE task_id = %s
+    AND user_uuid = %s;
+    """
+    try:
+        cursor.execute(sql, (
+            body.task_uuid,
+            request.headers.get("user_uuid"),
+            ))
+        connection.commit()
+    except psycopg2.Error as e:
+        connection.rollback()
+        return JSONResponse(
+                            status_code=500,
+                            content={"detail": f"Database error: {e.pgerror}"}
+                            )
+    if cursor.rowcount == 0:
+        return JSONResponse(
+            status_code=404,
+            content={"detail": "task not found"}
+        )
     return {
                 "success": True
             }
