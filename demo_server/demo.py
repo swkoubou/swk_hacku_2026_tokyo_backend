@@ -40,7 +40,6 @@ class DefEventBody(BaseModel):
 
 class GetMonthEventsBody(BaseModel):
     year: str
-    month: str
 
 class UpdateEventBody(BaseModel):
     task_uuid: str
