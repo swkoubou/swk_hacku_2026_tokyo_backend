@@ -10,8 +10,13 @@ import os
 import openai
 import json
 import psycopg2
+import redis
+
+
 #run uvicorn demo:app --host 0.0.0.0 --port 8888 --reload
 #sample user_uuid 3c7a9a24-9e34-4f65-bc1e-9a6e6c7d7f12
+
+r = redis.Redis(host="redis", port=6379, decode_responses=True)
 t = Tokenizer()
 app = FastAPI()
 openai.api_key = os.getenv("OPENAI_API_KEY")
@@ -28,13 +33,38 @@ async def require_user_uuid(request: Request, call_next):
         return JSONResponse(
             status_code=400,
             content={"detail": "missing required header: user_uuid"},
-        ) #あとでREDIS追加する
-    if user_uuid != "3c7a9a24-9e34-4f65-bc1e-9a6e6c7d7f12":
+        ) 
+    redis_key = f"user_uuid:{user_uuid}" #目標をセンターに入れて代入
+    try:
+        if r.getex(redis_key, ex=3600): #通ってもいいですか
+            #print("redis認証")
+            return await call_next(request) #ああ、いいよ
+    except Exception: #redisはもう、死んでいる
+        pass  # なんとかなる！
+
+    try: 
+        cursor.execute(
+            "SELECT 1 FROM users WHERE user_uuid = %s",
+            (user_uuid,)
+        )
+        query_result = cursor.fetchone()
+    except Exception:
+        return JSONResponse( #
+            status_code=500,
+            content={"detail": "database error"},
+        )
+    if query_result: #dbから読み込みしてあったら
+            try:
+                r.set(redis_key, 'active', ex=3600) #redisに追加、次からショートカットどうぞ
+            except Exception: #redis dead!
+                pass
+            #print("db認証")
+            return await call_next(request) #ああ、いいよ
+    else: #君はこれ以上進めない
         return JSONResponse(
             status_code=401,
             content={"detail": "unauthorized user_uuid"},
         )
-    return await call_next(request)
 
 
 # ===== リクエストボディ定義 =====
