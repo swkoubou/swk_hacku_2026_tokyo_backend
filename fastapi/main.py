@@ -44,7 +44,7 @@ class MessageBody(BaseModel):
 
 class DefEventBody(BaseModel):
     start_date: str
-    start_time: str
+    start_time: Optional[str] = None  # nullを許容
     end_date: str
     event_name: str
 
@@ -55,7 +55,7 @@ class GetMonthEventsBody(BaseModel):
 class UpdateEventBody(BaseModel):
     task_uuid: str
     new_start_date: str
-    new_start_time: str
+    new_start_time: Optional[str] = None  # nullを許容
     new_end_date: str
     new_event_name: str
 
