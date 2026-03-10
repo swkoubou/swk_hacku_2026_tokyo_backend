@@ -175,14 +175,43 @@ def lv2(request: Request, body: MessageBody):
 
 @app.post("/lv3") #リクエストA lv3
 def lv3(request: Request, body: MessageBody):
+    response = openai.chat.completions.create(
+    model="gpt-5-mini",
+    messages=[
+        {"role": "system", "content": f"""
+        レスポンスは必ずJSONで返してください。
+        今日の日付は{datetime.now().strftime("%Y%m%d")}です
+        あなたは会話から得られた情報を元に、適切な返答を生成してください。
+        ユーザーがなにを求めているかある程度察してstart_dateとend_dateとevent_nameを設定してください
+        無理にstart_timeは推測しないでください
+        以下がサンプルです
+        {{
+            "start_date": "2026-03-09",
+            "start_time": "10:40:00",
+            "end_date": "2026-03-10",
+            "event_name": "旅行"
+        }}
+        "start_time"は必ずHH:MM:00の形式で返してください。
+        秒数の情報はひつようありませんので
+        また、n時などの明確な時間の指定がされてない場合はNULLを返してください。
+        以下がNULLを返すサンプルです
+        {{
+            "start_date": "2026-03-09",
+            "start_time": null,
+            "end_date": "2026-03-10",
+            "event_name": "旅行"
+        }}
+        開始日と終了日が不明な場合は本日の日付を使用してください。
+        """},
+        {"role": "user", "content": body.message}
+    ]
+    )
+    data = json.loads(response.choices[0].message.content)
+    print(data)
     return {
                 "lv": 3,
                 "message": body.message,
-                "start_date": "2026-03-09",
-                "start_time": "10:45:00",
-                "end_date": "2026-03-10",
-                "event_name": "マイケルと旅行"
-            }
+            }|data
 
 @app.post("/def_event") #リクエストB
 def def_event(request: Request, body: DefEventBody):
