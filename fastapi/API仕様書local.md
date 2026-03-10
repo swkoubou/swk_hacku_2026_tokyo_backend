@@ -31,7 +31,7 @@
 | POST | `/lv2` | イベント解析 lv2 |
 | POST | `/lv3` | イベント解析 lv3 |
 | POST | `/def_event` | イベント登録 |
-| POST | `/get_month_events` | 月別イベント取得 |
+| POST | `/get_year_events` | 年別イベント取得 |
 | POST | `/update_event` | イベント更新 |
 | POST | `/delete_event` | イベント削除 |
 | POST | `/get_today_events` | 本日のイベント取得 |
@@ -203,7 +203,7 @@ curl -s -X POST http://localhost:8888/def_event -H "user_uuid: 3c7a9a24-9e34-4f6
 
 ---
 
-### POST `/get_month_events`
+### POST `/get_year_events`
 **認証:** 必要
 
 **リクエストヘッダー:**
@@ -217,9 +217,8 @@ curl -s -X POST http://localhost:8888/def_event -H "user_uuid: 3c7a9a24-9e34-4f6
 | フィールド名 | 必須 | 説明 |
 |------------|------|------|
 | `year` | ✅ | 取得する年 (例: `"2026"`) |
-| `month` | ✅ | 取得する月 (例: `"3"`) |
 
-指定した年月のイベント一覧を返します。`start_time` が `null` のイベントも含まれます。
+指定した年のイベント一覧を返します。`start_time` が `null` のイベントも含まれます。
 
 **レスポンス例:**
 ```json
@@ -245,7 +244,7 @@ curl -s -X POST http://localhost:8888/def_event -H "user_uuid: 3c7a9a24-9e34-4f6
 
 **curlサンプル:**
 ```cmd
-curl -s -X POST http://localhost:8888/get_month_events -H "user_uuid: 3c7a9a24-9e34-4f65-bc1e-9a6e6c7d7f12" -H "Content-Type: application/json" -d "{\"year\": \"2026\", \"month\": \"3\"}"
+curl -s -X POST http://localhost:8888/get_year_events -H "user_uuid: 3c7a9a24-9e34-4f65-bc1e-9a6e6c7d7f12" -H "Content-Type: application/json" -d "{\"year\": \"2026\"}"
 ```
 
 ---
