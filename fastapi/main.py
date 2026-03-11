@@ -158,6 +158,8 @@ def lv1(request: Request, body: MessageBody):
             start_time=time[0][0]+":00:00"
         else: #分情報があったら
             start_time=time[0][0]+":"+time[0][1]+":00"
+    if event_name="":
+        event_name="名称未設定"
     return{
                 "lv": 1,
                 "message": body.message,
@@ -175,6 +177,7 @@ def lv2(request: Request, body: MessageBody):
         {"role": "system", "content": f"""
         レスポンスは必ずJSONで返してください。
         今日の日付は{datetime.now().strftime("%Y%m%d")}です
+        event_nameがわからないときは 名称未設定 としてください。
         あなたは会話から得られた情報を元に、適切な返答を生成してください。
         以下がサンプルです
         {{
@@ -215,6 +218,7 @@ def lv3(request: Request, body: MessageBody):
         今日の日付は{datetime.now().strftime("%Y%m%d")}です
         あなたは会話から得られた情報を元に、適切な返答を生成してください。
         ユーザーがなにを求めているかある程度察してstart_dateとend_dateとevent_nameを設定してください
+        event_nameがわからないときは 名称未設定 としてください。
         無理にstart_timeは推測しないでください
         以下がサンプルです
         {{
