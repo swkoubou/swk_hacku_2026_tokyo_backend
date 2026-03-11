@@ -248,9 +248,10 @@ def lv3(request: Request, body: MessageBody):
 @app.post("/def_event") #リクエストB
 def def_event(request: Request, body: DefEventBody):
     sql = "INSERT INTO events (task_id, user_uuid, start_date, start_time, end_date, event_name) VALUES (%s, %s, %s, %s, %s, %s)"
+    task_id=str(uuid.uuid4())
     try:
         cursor.execute(sql, (
-            str(uuid.uuid4()),
+            task_id,
             request.headers.get("user_uuid"),
             body.start_date,
             body.start_time,
@@ -264,6 +265,20 @@ def def_event(request: Request, body: DefEventBody):
                             status_code=500,
                             content={"detail": f"Database error: {e.pgerror}"}
                             )
+    if body.start_date==datetime.now().strftime("%Y-%m-%d"):
+        data={
+            "user_uuid": task_id,
+            "task_uuid": request.headers.get("user_uuid"),
+            "start_date": body.start_date,
+            "start_time": body.start_time,
+            "end_date": body.end_date,
+            "event_name": body.event_name,
+            "done":False
+        }
+        now = datetime.now()
+        tomorrow = (now + timedelta(days=1)).replace(hour=0, minute=0, second=0, microsecond=0)
+        seconds_until_end_of_day = int((tomorrow - now).total_seconds())
+        r.set(f"event:{request.headers.get('user_uuid')}:{task_id}", json.dumps(data), ex=seconds_until_end_of_day)
     return {
                 "success": True
             }
