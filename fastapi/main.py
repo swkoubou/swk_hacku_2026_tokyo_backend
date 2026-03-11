@@ -158,7 +158,7 @@ def lv1(request: Request, body: MessageBody):
             start_time=time[0][0]+":00:00"
         else: #分情報があったら
             start_time=time[0][0]+":"+time[0][1]+":00"
-    if event_name="":
+    if event_name=="":
         event_name="名称未設定"
     return{
                 "lv": 1,
