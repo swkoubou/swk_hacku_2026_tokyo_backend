@@ -41,7 +41,8 @@ def job():
             "start_date": event["start_date"],
             "start_time": event["start_time"],
             "end_date": event["end_date"],
-            "event_name": event["event_name"]
+            "event_name": event["event_name"],
+            "done":False
         }
         pipe.set(f"event:{event['user_uuid']}:{event['task_id']}", json.dumps(data), ex=86400)
         sum+=1
