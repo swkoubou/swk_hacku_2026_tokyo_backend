@@ -375,44 +375,18 @@ def delete_event(request: Request, body: TaskBody):
 
 @app.post("/get_today_events") #リクエストX
 def get_today_events(request: Request):
-    return [
-            {
-                "user_uuid": "3c7a9a24-9e34-4f65-bc1e-9a6e6c7d7f12",
-                "task_uuid": "fbcf83d0-13e6-419f-83eb-661ea656d7b1",
-                "start_date": "2026-03-10",
-                "start_time": "10:40:00",
-                "end_date": "2026-03-15",
-                "event_name": "旅行1",
-                "done": True
-            },
-            {
-                "user_uuid": "3c7a9a24-9e34-4f65-bc1e-9a6e6c7d7f12",
-                "task_uuid": "c8681580-e36d-448d-9752-b9fc49c2e393",
-                "start_date": "2026-03-10",
-                "start_time": "8:40:00",
-                "end_date": "2026-03-22",
-                "event_name": "旅行2",
-                "done": True
-            },
-            {
-                "user_uuid": "3c7a9a24-9e34-4f65-bc1e-9a6e6c7d7f12",
-                "task_uuid": "60193e10-35c3-497c-a4d5-08a1267b9f73",
-                "start_date": "2026-03-10",
-                "start_time": "10:40:00",
-                "end_date": "2026-04-10",
-                "event_name": "旅行3",
-                "done": True
-            },
-            {
-                "user_uuid": "3c7a9a24-9e34-4f65-bc1e-9a6e6c7d7f12",
-                "task_uuid": "9c41ce15-89f7-4ffd-a632-721e0186c611",
-                "start_date": "2026-03-10",
-                "start_time": None,
-                "end_date": "2026-05-10",
-                "event_name": "旅行4",
-                "done": True
-            },
-        ]
+    keys = []
+    for key in r.scan_iter(f"event:{request.headers.get('user_uuid')}:*"):
+        keys.append(key)
+    pipe = r.pipeline()
+    for key in keys:
+        pipe.get(key)
+    result = pipe.execute()
+    events = []
+    for x in result:
+        if x:
+            events.append(json.loads(x))
+    return events
 
 @app.post("/do_today_event") #リクエストY
 def do_today_event(request: Request, body: TaskBody):
