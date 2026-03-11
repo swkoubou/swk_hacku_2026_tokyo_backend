@@ -390,15 +390,35 @@ def get_today_events(request: Request):
 
 @app.post("/do_today_event") #リクエストY
 def do_today_event(request: Request, body: TaskBody):
-    return {
-                "success": True
-            }
+    key = f"event:{request.headers.get('user_uuid')}:{body.task_uuid}"
+    value = r.get(key)
+    if value:
+        data = json.loads(value)
+        data["done"]=True
+        r.set(key, json.dumps(data), keepttl=True)
+        return {
+            "success": True
+        }
+    return JSONResponse(
+            status_code=404,
+            content={"detail": "task not found"}
+        )
 
 @app.post("/rollback_today_event") #リクエストZ
 def rollback_today_event(request: Request, body: TaskBody):
-    return {
-                "success": True
-            }
+    key = f"event:{request.headers.get('user_uuid')}:{body.task_uuid}"
+    value = r.get(key)
+    if value:
+        data = json.loads(value)
+        data["done"]=False
+        r.set(key, json.dumps(data), keepttl=True)
+        return {
+            "success": True
+        }
+    return JSONResponse(
+            status_code=404,
+            content={"detail": "task not found"}
+        )
 
 @app.post("/gen_uuid") #リクエスト FOR DEBUG
 def gen_uuid():
