@@ -384,6 +384,7 @@ def delete_event(request: Request, body: TaskBody):
             status_code=404,
             content={"detail": "task not found"}
         )
+    r.delete(f"event:{request.headers.get('user_uuid')}:{body.task_uuid}")
     return {
                 "success": True
             }
