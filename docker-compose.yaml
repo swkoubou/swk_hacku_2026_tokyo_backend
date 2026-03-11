@@ -9,8 +9,8 @@ services:
     command: >
       sh -c "
         pip install -r requirements.txt &&
-        #uvicorn main:app --host 0.0.0.0 --port 8888 --workers 16 --proxy-headers #自動起動
-        tail -f /dev/null #デバッグ
+        uvicorn main:app --host 0.0.0.0 --port 8888 --workers 16 --proxy-headers #自動起動
+        #tail -f /dev/null #デバッグ
       "
     environment:
       - OPENAI_API_KEY=${OPENAI_API_KEY}
@@ -19,19 +19,28 @@ services:
   scheduler:
     image: python:3.11-slim
     working_dir: /app
+    depends_on:
+      redis:
+        condition: service_healthy
+      postgres:
+        condition: service_healthy
     volumes:
       - ./scheduler:/app
     command: >
       sh -c "
         pip install -r requirements.txt &&
-        #python3 scheduler.py #自動起動
-        tail -f /dev/null #デバッグ
+        python3 scheduler.py #自動起動
+        #tail -f /dev/null #デバッグ
       "
     environment:
       - TZ=Asia/Tokyo
 
   postgres:
     image: postgres:16
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U app -d calendar"]
+      interval: 5s
+      retries: 5
     environment:
       POSTGRES_USER: app
       POSTGRES_PASSWORD: app
@@ -43,3 +52,7 @@ services:
 
   redis:
     image: redis:7
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      retries: 5

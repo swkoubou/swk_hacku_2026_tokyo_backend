@@ -13,7 +13,8 @@ r = redis.Redis(host="redis", port=6379, decode_responses=True)
 scheduler = BlockingScheduler()
 
 def job():
-    print("run job")
+    with open("log.txt", "a", encoding="utf-8") as f:
+        f.write(f"start scheduler {date.today()}\n")
     try: 
         cursor.execute(
             """
@@ -32,7 +33,7 @@ def job():
         query_result = cursor.fetchall()
     except Exception as e:
         print(e)
-    sum=0
+    count=0
     pipe = r.pipeline()
     for event in query_result:
         data={
@@ -45,10 +46,12 @@ def job():
             "done":False
         }
         pipe.set(f"event:{event['user_uuid']}:{event['task_id']}", json.dumps(data), ex=86400)
-        sum+=1
+        count+=1
     pipe.execute()
-    print("write",sum," ",date.today())
+    with open("log.txt", "a", encoding="utf-8") as f:
+        f.write(f"finish scheduler {date.today()} count:{count}\n")
 
 print("start schedule")
 scheduler.add_job(job, "cron", hour=0, minute=0)
+#scheduler.add_job(job, "interval", seconds=10) #debug
 scheduler.start()
