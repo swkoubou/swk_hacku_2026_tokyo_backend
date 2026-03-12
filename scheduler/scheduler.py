@@ -26,9 +26,9 @@ def append_doay_data(): #起動時にredisにぶち込む
                 TO_CHAR(end_date, 'YYYY-MM-DD') as end_date,
                 event_name
             FROM events
-            WHERE start_date = %s
+            WHERE start_date <= %s AND end_date >= %s
             """,
-            (date.today(),)
+            (date.today(), date.today())
         )
         query_result = cursor.fetchall()
     except Exception as e:
@@ -36,21 +36,20 @@ def append_doay_data(): #起動時にredisにぶち込む
     count=0
     pipe = r.pipeline()
     for event in query_result:
-        if event["start_date"]==date.today().strftime("%Y-%m-%d"):
-            data={
-                "user_uuid": event["user_uuid"],
-                "task_uuid": event["task_id"],
-                "start_date": event["start_date"],
-                "start_time": event["start_time"],
-                "end_date": event["end_date"],
-                "event_name": event["event_name"],
-                "done":False
-            }
-            now_ts = int(time.time())  # 現在のUNIXタイムスタンプ（秒）
-            today_midnight_ts = int(time.mktime(date.today().timetuple()))
-            seconds_until_end_of_day = 24*60*60 - (now_ts - today_midnight_ts)
-            pipe.set(f"event:{event['user_uuid']}:{event['task_id']}", json.dumps(data), ex=seconds_until_end_of_day)
-            count+=1
+        data={
+            "user_uuid": event["user_uuid"],
+            "task_uuid": event["task_id"],
+            "start_date": event["start_date"],
+            "start_time": event["start_time"],
+            "end_date": event["end_date"],
+            "event_name": event["event_name"],
+            "done":False
+        }
+        now_ts = int(time.time())  # 現在のUNIXタイムスタンプ（秒）
+        today_midnight_ts = int(time.mktime(date.today().timetuple()))
+        seconds_until_end_of_day = 24*60*60 - (now_ts - today_midnight_ts)
+        pipe.set(f"event:{event['user_uuid']}:{event['task_id']}", json.dumps(data), ex=seconds_until_end_of_day)
+        count+=1
 
     pipe.execute()
     with open("log.txt", "a", encoding="utf-8") as f:
@@ -70,9 +69,9 @@ def job():
                 TO_CHAR(end_date, 'YYYY-MM-DD') as end_date,
                 event_name
             FROM events
-            WHERE start_date = %s
+            WHERE start_date <= %s AND end_date >= %s
             """,
-            (date.today(),)
+            (date.today(), date.today())
         )
         query_result = cursor.fetchall()
     except Exception as e:
