@@ -7,7 +7,7 @@ from janome.tokenizer import Tokenizer
 from datetime import datetime, timedelta
 import re
 import os
-import openai
+from openai import AsyncOpenAI
 import json
 import psycopg2
 import redis
@@ -19,7 +19,7 @@ from psycopg2.extras import RealDictCursor
 r = redis.Redis(host="redis", port=6379, decode_responses=True)
 t = Tokenizer()
 app = FastAPI()
-openai.api_key = os.getenv("OPENAI_API_KEY")
+openai_client = AsyncOpenAI(api_key=os.getenv("OPENAI_API_KEY"))
 connection = psycopg2.connect("host=postgres dbname=calendar user=app password=app")
 cursor = connection.cursor(cursor_factory=RealDictCursor)
 
@@ -170,8 +170,8 @@ def lv1(request: Request, body: MessageBody):
             }
 
 @app.post("/lv2") #リクエストA lv2
-def lv2(request: Request, body: MessageBody):
-    response = openai.chat.completions.create(
+async def lv2(request: Request, body: MessageBody):
+    response = await openai_client.chat.completions.create(
     model="gpt-4.1-nano",
     messages=[
         {"role": "system", "content": f"""
@@ -209,8 +209,8 @@ def lv2(request: Request, body: MessageBody):
             }|data
 
 @app.post("/lv3") #リクエストA lv3
-def lv3(request: Request, body: MessageBody):
-    response = openai.chat.completions.create(
+async def lv3(request: Request, body: MessageBody):
+    response = await openai_client.chat.completions.create(
     model="gpt-5-mini",
     messages=[
         {"role": "system", "content": f"""
