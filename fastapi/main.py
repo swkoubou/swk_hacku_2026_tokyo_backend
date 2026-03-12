@@ -269,7 +269,10 @@ def def_event(request: Request, body: DefEventBody):
                             status_code=500,
                             content={"detail": f"Database error: {e.pgerror}"}
                             )
-    if body.start_date==datetime.now().strftime("%Y-%m-%d"):
+    today = datetime.now().date()
+    start_date = datetime.strptime(body.start_date, "%Y-%m-%d").date()
+    end_date = datetime.strptime(body.end_date, "%Y-%m-%d").date()
+    if start_date <= today <= end_date:
         data={
             "user_uuid": request.headers.get("user_uuid"),
             "task_uuid": task_id,
@@ -361,7 +364,10 @@ def update_event(request: Request, body: UpdateEventBody):
             content={"detail": "task not found"}
         )
     r.delete(f"event:{request.headers.get('user_uuid')}:{body.task_uuid}")
-    if body.new_start_date==datetime.now().strftime("%Y-%m-%d"):
+    today = datetime.now().date()
+    start_date = datetime.strptime(body.new_start_date, "%Y-%m-%d").date()
+    end_date = datetime.strptime(body.new_end_date, "%Y-%m-%d").date()
+    if start_date <= today <= end_date:
         data={
             "user_uuid": request.headers.get("user_uuid"),
             "task_uuid": body.task_uuid,
