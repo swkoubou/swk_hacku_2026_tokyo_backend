@@ -4,6 +4,7 @@ import psycopg2
 from psycopg2.extras import RealDictCursor
 from datetime import date
 import json
+import time
 
 connection = psycopg2.connect("host=postgres dbname=calendar user=app password=app")
 cursor = connection.cursor(cursor_factory=RealDictCursor)
@@ -45,8 +46,12 @@ def append_doay_data(): #起動時にredisにぶち込む
                 "event_name": event["event_name"],
                 "done":False
             }
-            pipe.set(f"event:{event['user_uuid']}:{event['task_id']}", json.dumps(data), ex=86400)
+            now_ts = int(time.time())  # 現在のUNIXタイムスタンプ（秒）
+            today_midnight_ts = int(time.mktime(date.today().timetuple()))
+            seconds_until_end_of_day = 24*60*60 - (now_ts - today_midnight_ts)
+            pipe.set(f"event:{event['user_uuid']}:{event['task_id']}", json.dumps(data), ex=seconds_until_end_of_day)
             count+=1
+
     pipe.execute()
     with open("log.txt", "a", encoding="utf-8") as f:
         f.write(f"finish init redis {date.today()} count:{count}\n")
