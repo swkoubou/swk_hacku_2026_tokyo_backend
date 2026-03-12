@@ -271,8 +271,8 @@ def def_event(request: Request, body: DefEventBody):
                             )
     if body.start_date==datetime.now().strftime("%Y-%m-%d"):
         data={
-            "user_uuid": task_id,
-            "task_uuid": request.headers.get("user_uuid"),
+            "user_uuid": request.headers.get("user_uuid"),
+            "task_uuid": task_id,
             "start_date": body.start_date,
             "start_time": body.start_time,
             "end_date": body.end_date,
@@ -363,8 +363,8 @@ def update_event(request: Request, body: UpdateEventBody):
     r.delete(f"event:{request.headers.get('user_uuid')}:{body.task_uuid}")
     if body.new_start_date==datetime.now().strftime("%Y-%m-%d"):
         data={
-            "user_uuid": body.task_uuid,
-            "task_uuid": request.headers.get("user_uuid"),
+            "user_uuid": request.headers.get("user_uuid"),
+            "task_uuid": body.task_uuid,
             "start_date": body.new_start_date,
             "start_time": body.new_start_time,
             "end_date": body.new_end_date,
