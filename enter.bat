@@ -1,1 +1,0 @@
-docker compose exec fastapi /bin/sh
