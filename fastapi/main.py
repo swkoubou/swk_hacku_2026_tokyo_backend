@@ -102,17 +102,19 @@ def lv1(request: Request, body: MessageBody):
     event_name=""
     #ここから前処理
     if "今日" in sentence:
-        sentence = sentence.replace("今日", datetime.now().strftime("%Y%m%d")) #今日の日付
+        sentence = sentence.replace("今日", datetime.now().strftime("%Y%m%d")+"の") #今日の日付
     if "明日" in sentence:
-        sentence = sentence.replace("明日", (datetime.now() + timedelta(days=1)).strftime("%Y%m%d")) #明日の日付
+        sentence = sentence.replace("明日", (datetime.now() + timedelta(days=1)).strftime("%Y%m%d")+"の") #明日の日付
     if "明後日" in sentence:
-        sentence = sentence.replace("明後日", (datetime.now() + timedelta(days=2)).strftime("%Y%m%d")) #明後日の日付
+        sentence = sentence.replace("明後日", (datetime.now() + timedelta(days=2)).strftime("%Y%m%d")+"の") #明後日の日付
     if "今週" in sentence:
-        sentence = sentence.replace("今週", datetime.now().strftime("%Y%m%d")) #今日の日付
+        sentence = sentence.replace("今週", datetime.now().strftime("%Y%m%d")+"の") #今日の日付
     if "今月" in sentence:
-        sentence = sentence.replace("今月", datetime.now().strftime("%Y%m%d")) #今日の日付
+        sentence = sentence.replace("今月", datetime.now().strftime("%Y%m%d")+"の") #今日の日付
     if "今年" in sentence:
-        sentence = sentence.replace("今年", datetime.now().strftime("%Y%m%d")) #今日の日付
+        sentence = sentence.replace("今年", datetime.now().strftime("%Y%m%d")+"の") #今日の日付
+    if "のの" in sentence:
+        sentence = sentence.replace("のの", "の")
     if ("月" in sentence) or ("日" in sentence):
         year = datetime.now().year
         sentence = re.sub(
@@ -152,6 +154,26 @@ def lv1(request: Request, body: MessageBody):
         end_date=date_list[1]
     #print(date_list)
     time=re.findall(r'(\d{1,2})時(?:\s*(\d{1,2})分)?', sentence)
+    print(time)
+    try:
+        h=int(time[0][0])
+        if(h>=24):
+            return JSONResponse( #
+                status_code=400,
+                content={"detail": "time format is invalid"},
+            )
+    except:
+        pass
+    
+    try:
+        m=int(time[0][1])
+        if(m>=60):
+            return JSONResponse( #
+                status_code=400,
+                content={"detail": "time format is invalid"},
+            )
+    except:
+        pass
     #print("time",time)
     if time != []:
         if time[0][1]=="": #分情報がなかったら
