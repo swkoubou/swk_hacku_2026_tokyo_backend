@@ -44,7 +44,7 @@ sudo docker compose down
 
 本プロジェクトでは以下のOSSを利用しています。各OSSの著作権およびライセンスは各開発者・団体に帰属します。
 
-### バックエンドライブラリで利用している主なOSS
+### バックエンドライブラリで利用しているOSS
 
 | コンポーネント / ライブラリ | 用途 | ライセンス |
 | --- | --- | --- |
@@ -57,7 +57,7 @@ sudo docker compose down
 | APScheduler (`APScheduler`) | バックグラウンドジョブスケジューラ | MIT License |
 | Uvicorn (`uvicorn`) | ASGI サーバ | BSD 3-Clause License |
 
-### コンテナイメージで利用している主なOSS
+### コンテナイメージで利用しているOSS
 
 `docker-compose.yaml` で以下の公式コンテナイメージを利用しています。
 
